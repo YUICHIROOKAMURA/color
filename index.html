@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パーソナルカラー診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e3f2fd 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(to right, #9c27b0, #e91e63);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            transition: all 0.3s;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .button-primary {
+            background: linear-gradient(to right, #9c27b0, #e91e63);
+            color: white;
+        }
+
+        .button-primary:hover {
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+        }
+
+        .button-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .button-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .option-button {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-button:hover {
+            border-color: #9c27b0;
+            background: #f3e5f5;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .color-box {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .color-label {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #9c27b0, #e91e63);
+            transition: width 0.3s;
+        }
+
+        .result-badge {
+            background: linear-gradient(to right, #f3e5f5, #fce4ec);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-badge h2 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .result-badge p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .section-content {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .info-card h4 {
+            color: #9c27b0;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .info-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .feature-card h2 {
+            font-size: 24px;
+            margin: 20px 0 10px;
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .back-btn:hover {
+            color: #333;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        ul li {
+            padding: 8px 0;
+            color: #666;
+        }
+
+        ul li:before {
+            content: "• ";
+            color: #9c27b0;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .uploaded-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .color-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script>
+        // アプリの状態管理
+        const state = {
+            currentPage: 'home',
+            diagnosisMode: null,
+            questionStep: 0,
+            answers: {},
+            result: null,
+            uploadedImage: null,
+            savedResults: []
+        };
+
+        // パーソナルカラータイプの定義
+        const colorTypes = {
+            'spring-bright': {
+                name: 'ブライトスプリング',
+                description: '明るく鮮やかな色が似合う、華やかで活動的な印象',
+                characteristics: ['クリアで明るい肌', '明るい茶色やハシバミ色の瞳', '明るいブラウンやゴールドの髪'],
+                bestColors: ['#FFD700', '#FF6B6B', '#4ECDC4', '#FFE66D', '#FF8C94', '#A8E6CF'],
+                avoidColors: ['#2C3E50', '#34495E', '#7F8C8D'],
+                makeup: {
+                    lipstick: 'コーラルピンク、オレンジレッド',
+                    cheek: 'コーラル、アプリコット',
+                    eyeshadow: 'ゴールド、オレンジブラウン、ライトグリーン'
+                },
+                fashion: {
+                    tops: 'アイボリー、コーラル、ターコイズ、イエローグリーン',
+                    bottoms: 'キャメル、ベージュ、ライトブラウン',
+                    accessories: 'ゴールド系、明るいブラウンレザー'
+                }
+            },
+            'spring-light': {
+                name: 'ライトスプリング',
+                description: '柔らかく明るい色が似合う、優しく可愛らしい印象',
+                characteristics: ['明るく透明感のある肌', '明るい茶色の瞳', 'ライトブラウンやブロンドの髪'],
+                bestColors: ['#FFF9E6', '#FFE5B4', '#FFD1DC', '#E6F3FF', '#FFEFD5', '#F0E68C'],
+                avoidColors: ['#000000', '#8B4513', '#483D8B'],
+                makeup: {
+                    lipstick: 'ベビーピンク、ピーチピンク',
+                    cheek: 'ライトコーラル、ピーチ',
+                    eyeshadow: 'ライトベージュ、シャンパンゴールド、ライトブラウン'
+                },
+                fashion: {
+                    tops: 'パステルイエロー、ライトコーラル、ミントグリーン',
+                    bottoms: 'ライトベージュ、クリーム、ライトグレー',
+                    accessories: 'ゴールド系、パール、ライトカラーストーン'
+                }
+            },
+            'spring-warm': {
+                name: 'ウォームスプリング',
+                description: '温かみのある明るい色が似合う、親しみやすい印象',
+                characteristics: ['黄みがかった温かい肌色', '温かみのあるブラウンの瞳', 'ゴールデンブラウンの髪'],
+                bestColors: ['#FF9933', '#FFB347', '#98D8C8', '#F7DC6F', '#E67E22', '#52BE80'],
+                avoidColors: ['#191970', '#4B0082', '#800020'],
+                makeup: {
+                    lipstick: 'オレンジレッド、サーモンピンク',
+                    cheek: 'アプリコット、ピーチ',
+                    eyeshadow: 'ウォームブラウン、ゴールド、オリーブグリーン'
+                },
+                fashion: {
+                    tops: 'オレンジ、ゴールデンイエロー、ターコイズ',
+                    bottoms: 'キャメル、ウォームブラウン、カーキ',
+                    accessories: 'ゴールド、ブロンズ、ウッド素材'
+                }
+            },
+            'spring-clear': {
+                name: 'クリアスプリング',
+                description: 'クリアで鮮やかな色が似合う、フレッシュで生き生きとした印象',
+                characteristics: ['透明感のある明るい肌', 'クリアなブラウンの瞳', '明るくクリアな髪色'],
+                bestColors: ['#00CED1', '#FF69B4', '#FFD700', '#7FFF00', '#FF4500', '#1E90FF'],
+                avoidColors: ['#696969', '#2F4F4F', '#556B2F'],
+                makeup: {
+                    lipstick: 'クリアレッド、ホットピンク',
+                    cheek: 'ブライトコーラル、クリアピンク',
+                    eyeshadow: 'ブライトブルー、シルバー、クリアブラウン'
+                },
+                fashion: {
+                    tops: 'クリアブルー、ブライトイエロー、コーラルレッド',
+                    bottoms: 'ホワイト、ライトグレー、ネイビー',
+                    accessories: 'シルバー、クリアストーン、ホワイトゴールド'
+                }
+            },
+            'summer-light': {
+                name: 'ライトサマー',
+                description: '明るく柔らかい色が似合う、上品で優雅な印象',
+                characteristics: ['ピンク系の明るい肌', '柔らかいグレーやブルーの瞳', 'アッシュブラウンやグレイッシュな髪'],
+                bestColors: ['#E6E6FA', '#B0C4DE', '#F0E5E5', '#D8BFD8', '#FFE4E1', '#F5F5DC'],
+                avoidColors: ['#FF4500', '#FF8C00', '#DAA520'],
+                makeup: {
+                    lipstick: 'ローズピンク、モーヴピンク',
+                    cheek: 'ソフトピンク、ローズ',
+                    eyeshadow: 'ライトグレー、ラベンダー、ソフトブラウン'
+                },
+                fashion: {
+                    tops: 'ラベンダー、ソフトブルー、ローズピンク',
+                    bottoms: 'グレージュ、ライトグレー、ソフトホワイト',
+                    accessories: 'シルバー、プラチナ、パール'
+                }
+            },
+            'summer-soft': {
+                name: 'ソフトサマー',
+                description: '柔らかく落ち着いた色が似合う、エレガントで知的な印象',
+                characteristics: ['柔らかいピンクベージュの肌', 'グレイッシュな瞳', 'ソフトなブラウンやグレーの髪'],
+                bestColors: ['#B8B8D1', '#D3B9A3', '#C9ADA7', '#9FA8B0', '#E8D5C4', '#A8DADC'],
+                avoidColors: ['#FF0000', '#FF6F00', '#FFD700'],
+                makeup: {
+                    lipstick: 'モーヴ、ローズブラウン',
+                    cheek: 'ソフトローズ、モーヴピンク',
+                    eyeshadow: 'グレージュ、モーヴ、ソフトグレー'
+                },
+                fashion: {
+                    tops: 'ソフトブルーグレー、モーヴ、ダスティローズ',
+                    bottoms: 'グレージュ、ココア、ソフトグレー',
+                    accessories: 'シルバー、ホワイトゴールド、マットな質感'
+                }
+            },
+            'summer-cool': {
+                name: 'クールサマー',
+                description: '涼しげで上品な色が似合う、クールで洗練された印象',
+                characteristics: ['青みのある明るい肌', 'ブルーやグレーの瞳', 'アッシュ系の髪'],
+                bestColors: ['#87CEEB', '#9370DB', '#B0C4DE', '#DDA0DD', '#AFEEEE', '#E0B0FF'],
+                avoidColors: ['#FF4500', '#DC143C', '#FF8C00'],
+                makeup: {
+                    lipstick: 'ローズレッド、ワインレッド',
+                    cheek: 'クールピンク、ローズ',
+                    eyeshadow: 'シルバーグレー、ブルー、パープル'
+                },
+                fashion: {
+                    tops: 'ロイヤルブルー、ラベンダー、クールピンク',
+                    bottoms: 'ネイビー、グレー、チャコール',
+                    accessories: 'シルバー、プラチナ、ブルーストーン'
+                }
+            },
+            'summer-mute': {
+                name: 'ミューテッドサマー',
+                description: 'くすんだ柔らかい色が似合う、落ち着いた大人の印象',
+                characteristics: ['マットな肌質', 'グレイッシュな瞳', 'くすんだブラウンやグレーの髪'],
+                bestColors: ['#A8A8A8', '#B8A89A', '#8B9D9C', '#A9A9A9', '#D4BEB0', '#9B9B9B'],
+                avoidColors: ['#FF1493', '#FF4500', '#FFD700'],
+                makeup: {
+                    lipstick: 'モーヴブラウン、ダスティローズ',
+                    cheek: 'グレイッシュピンク、ソフトブラウン',
+                    eyeshadow: 'グレー、ダスティブラウン、カーキ'
+                },
+                fashion: {
+                    tops: 'グレイッシュブルー、ダスティピンク、カーキ',
+                    bottoms: 'チャコールグレー、グレージュ、ダークカーキ',
+                    accessories: 'シルバー、ガンメタル、マット仕上げ'
+                }
+            },
+            'autumn-soft': {
+                name: 'ソフトオータム',
+                description: '柔らかく温かい色が似合う、穏やかで親しみやすい印象',
+                characteristics: ['マットな黄みのある肌', '温かみのあるブラウンの瞳', 'ソフトブラウンの髪'],
+                bestColors: ['#C19A6B', '#D2B48C', '#BC8F8F', '#A0826D', '#C2B280', '#B8956A'],
+                avoidColors: ['#0000FF', '#FF1493', '#00CED1'],
+                makeup: {
+                    lipstick: 'テラコッタ、ブラウンレッド',
+                    cheek: 'ピーチブラウン、ソフトオレンジ',
+                    eyeshadow: 'ソフトブラウン、カーキ、ベージュ'
+                },
+                fashion: {
+                    tops: 'サーモンピンク、ソフトオレンジ、カーキグリーン',
+                    bottoms: 'キャメル、ベージュ、オリーブ',
+                    accessories: 'ゴールド、ブロンズ、レザー'
+                }
+            },
+            'autumn-warm': {
+                name: 'ウォームオータム',
+                description: '深く温かい色が似合う、リッチで存在感のある印象',
+                characteristics: ['黄みの強い肌', 'ダークブラウンやアンバーの瞳', 'こっくりとしたブラウンの髪'],
+                bestColors: ['#CD853F', '#D2691E', '#8B4513', '#A0522D', '#B8860B', '#DAA520'],
+                avoidColors: ['#4169E1', '#FF69B4', '#00FFFF'],
+                makeup: {
+                    lipstick: 'ブラウンレッド、オレンジブラウン',
+                    cheek: 'テラコッタ、ブラウンオレンジ',
+                    eyeshadow: 'ウォームブラウン、カッパー、オリーブ'
+                },
+                fashion: {
+                    tops: 'バーントオレンジ、マスタード、フォレストグリーン',
+                    bottoms: 'キャメル、ブラウン、カーキ',
+                    accessories: 'ゴールド、ブロンズ、アンバー'
+                }
+            },
+            'autumn-deep': {
+                name: 'ディープオータム',
+                description: '深く濃い色が似合う、重厚でシックな印象',
+                characteristics: ['濃いめの肌色', 'ダークブラウンの瞳', 'ダークブラウンやブラックの髪'],
+                bestColors: ['#8B4513', '#654321', '#704214', '#3B3024', '#8B7355', '#7B3F00'],
+                avoidColors: ['#E0FFFF', '#F0F8FF', '#FFFACD'],
+                makeup: {
+                    lipstick: 'ダークレッド、ブラウンレッド',
+                    cheek: 'ディープブラウン、ブリックレッド',
+                    eyeshadow: 'ダークブラウン、ディープゴールド、ブラック'
+                },
+                fashion: {
+                    tops: 'ディープグリーン、バーガンディ、チョコレートブラウン',
+                    bottoms: 'ダークブラウン、ブラック、ディープグリーン',
+                    accessories: 'アンティークゴールド、ブロンズ、ダークレザー'
+                }
+            },
+            'autumn-mute': {
+                name: 'ミューテッドオータム',
+                description: 'くすんだ温かい色が似合う、落ち着いた大人の印象',
+                characteristics: ['マットな黄み肌', 'オリーブやブラウンの瞳', 'くすんだブラウンの髪'],
+                bestColors: ['#9B7653', '#A67B5B', '#8B7D6B', '#967117', '#AF8F6F', '#826644'],
+                avoidColors: ['#FF00FF', '#00FFFF', '#FFFF00'],
+                makeup: {
+                    lipstick: 'モーヴブラウン、テラコッタ',
+                    cheek: 'ダスティオレンジ、ブラウンピンク',
+                    eyeshadow: 'カーキ、グレージュ、ブラウン'
+                },
+                fashion: {
+                    tops: 'カーキ、ダスティオレンジ、オリーブグリーン',
+                    bottoms: 'ベージュ、カーキ、グレージュ',
+                    accessories: 'ゴールド、マットな仕上げ、ナチュラル素材'
+                }
+            },
+            'winter-clear': {
+                name: 'クリアウィンター',
+                description: '鮮やかで澄んだ色が似合う、シャープで華やかな印象',
+                characteristics: ['透明感のある肌', 'クリアな黒や茶色の瞳', '黒やダークブラウンの髪'],
+                bestColors: ['#FF0000', '#0000FF', '#FF00FF', '#00FF00', '#FF1493', '#1E90FF'],
+                avoidColors: ['#F5DEB3', '#DEB887', '#D2B48C'],
+                makeup: {
+                    lipstick: 'ビビッドレッド、フューシャピンク',
+                    cheek: 'クリアピンク、ローズピンク',
+                    eyeshadow: 'シルバー、ブラック、ビビッドブルー'
+                },
+                fashion: {
+                    tops: 'ピュアホワイト、ビビッドブルー、ショッキングピンク',
+                    bottoms: 'ブラック、ネイビー、ピュアホワイト',
+                    accessories: 'シルバー、プラチナ、ダイヤモンド'
+                }
+            },
+            'winter-cool': {
+                name: 'クールウィンター',
+                description: '冷たく澄んだ色が似合う、クールでスタイリッシュな印象',
+                characteristics: ['青白い肌', '冷たい印象の瞳', '黒髪'],
+                bestColors: ['#191970', '#4169E1', '#C71585', '#9370DB', '#00CED1', '#DC143C'],
+                avoidColors: ['#FF8C00', '#FFD700', '#F4A460'],
+                makeup: {
+                    lipstick: 'クールレッド、ベリーピンク',
+                    cheek: 'クールピンク、ワインレッド',
+                    eyeshadow: 'グレー、ネイビー、シルバー'
+                },
+                fashion: {
+                    tops: 'アイシーブルー、クールピンク、ネイビー',
+                    bottoms: 'ブラック、チャコール、ネイビー',
+                    accessories: 'シルバー、ホワイトゴールド、クリスタル'
+                }
+            },
+            'winter-deep': {
+                name: 'ディープウィンター',
+                description: '深く濃い色が似合う、ドラマチックでゴージャスな印象',
+                characteristics: ['コントラストの強い肌', 'ダークブラウンや黒の瞳', '黒髪'],
+                bestColors: ['#000000', '#8B0000', '#191970', '#4B0082', '#8B008B', '#006400'],
+                avoidColors: ['#FFFACD', '#F0E68C', '#EEE8AA'],
+                makeup: {
+                    lipstick: 'ディープレッド、プラムレッド',
+                    cheek: 'ディープローズ、ワイン',
+                    eyeshadow: 'ブラック、ディープパープル、ネイビー'
+                },
+                fashion: {
+                    tops: 'ブラック、ディープレッド、ロイヤルパープル',
+                    bottoms: 'ブラック、ディープネイビー',
+                    accessories: 'シルバー、ブラックオニキス、ルビー'
+                }
+            },
+            'winter-bright': {
+                name: 'ブライトウィンター',
+                description: '明るく鮮やかな色が似合う、華やかで印象的な雰囲気',
+                characteristics: ['明るく透明感のある肌', '黒やダークブラウンの瞳', '黒やダークブラウンの髪'],
+                bestColors: ['#FF1493', '#00BFFF', '#7FFF00', '#FF00FF', '#FFD700', '#FF4500'],
+                avoidColors: ['#696969', '#A9A9A9', '#808080'],
+                makeup: {
+                    lipstick: 'ホットピンク、オレンジレッド',
+                    cheek: 'ブライトピンク、コーラル',
+                    eyeshadow: 'シルバー、ホワイト、ビビッドカラー'
+                },
+                fashion: {
+                    tops: 'ブライトホワイト、エメラルドグリーン、ホットピンク',
+                    bottoms: 'ブラック、ホワイト、ロイヤルブルー',
+                    accessories: 'シルバー、ホワイトゴールド、カラーストーン'
+                }
+            }
+        };
+
+        // 質問データ
+        const questions = [
+            {
+                id: 'skin_tone',
+                question: 'あなたの肌の色調を教えてください',
+                options: [
+                    { value: 'pink_light', label: 'ピンク系で明るい', weight: { summer: 2, spring: 1 } },
+                    { value: 'yellow_light', label: '黄み系で明るい', weight: { spring: 2, autumn: 1 } },
+                    { value: 'pink_medium', label: 'ピンク系で普通', weight: { summer: 1, winter: 1 } },
+                    { value: 'yellow_medium', label: '黄み系で普通', weight: { autumn: 2 } },
+                    { value: 'neutral_dark', label: '色白または色黒', weight: { winter: 2 } }
+                ]
+            },
+            {
+                id: 'skin_texture',
+                question: '肌の質感はどちらに近いですか',
+                options: [
+                    { value: 'transparent', label: '透明感がある・薄い', weight: { spring: 1, summer: 1 } },
+                    { value: 'matte', label: 'マットな質感・厚みがある', weight: { autumn: 1, winter: 1 } }
+                ]
+            },
+            {
+                id: 'eye_color',
+                question: '瞳の色を教えてください',
+                options: [
+                    { value: 'light_brown', label: '明るい茶色・ハシバミ色', weight: { spring: 2 } },
+                    { value: 'soft_brown', label: '柔らかいブラウン・グレー', weight: { summer: 2 } },
+                    { value: 'dark_brown', label: '濃い茶色・こげ茶', weight: { autumn: 2 } },
+                    { value: 'black', label: '黒・ダークブラウン', weight: { winter: 2 } }
+                ]
+            },
+            {
+                id: 'hair_color',
+                question: '地毛の色を教えてください',
+                options: [
+                    { value: 'light_brown', label: '明るいブラウン・ゴールド系', weight: { spring: 2 } },
+                    { value: 'ash_brown', label: 'アッシュブラウン・グレー系', weight: { summer: 2 } },
+                    { value: 'warm_brown', label: '温かみのあるブラウン', weight: { autumn: 2 } },
+                    { value: 'black', label: '黒髪・ダークブラウン', weight: { winter: 2 } }
+                ]
+            },
+            {
+                id: 'vein_color',
+                question: '手首の血管の色は何色に見えますか',
+                options: [
+                    { value: 'blue', label: '青っぽく見える', weight: { summer: 2, winter: 1 } },
+                    { value: 'green', label: '緑っぽく見える', weight: { spring: 2, autumn: 1 } },
+                    { value: 'unclear', label: 'どちらともいえない', weight: {} }
+                ]
+            },
+            {
+                id: 'gold_silver',
+                question: 'ゴールドとシルバーのアクセサリー、どちらが似合いますか',
+                options: [
+                    { value: 'gold', label: 'ゴールドの方が似合う', weight: { spring: 2, autumn: 2 } },
+                    { value: 'silver', label: 'シルバーの方が似合う', weight: { summer: 2, winter: 2 } },
+                    { value: 'both', label: 'どちらも似合う', weight: {} }
+                ]
+            },
+            {
+                id: 'color_preference',
+                question: '以下の色で最も惹かれるのは',
+                options: [
+                    { value: 'bright_warm', label: '明るく温かい色（コーラル、ピーチなど）', weight: { spring: 2 } },
+                    { value: 'soft_cool', label: '柔らかく涼しい色（ラベンダー、ソフトブルーなど）', weight: { summer: 2 } },
+                    { value: 'deep_warm', label: '深く温かい色（テラコッタ、マスタードなど）', weight: { autumn: 2 } },
+                    { value: 'vivid_cool', label: '鮮やかで冷たい色（ビビッドレッド、ロイヤルブルーなど）', weight: { winter: 2 } }
+                ]
+            },
+            {
+                id: 'impression',
+                question: '人からよく言われる印象は',
+                options: [
+                    { value: 'fresh', label: '明るい、フレッシュ、元気', weight: { spring: 1 } },
+                    { value: 'elegant', label: '上品、エレガント、優しい', weight: { summer: 1 } },
+                    { value: 'mature', label: '落ち着いている、大人っぽい', weight: { autumn: 1 } },
+                    { value: 'cool', label: 'クール、シャープ、華やか', weight: { winter: 1 } }
+                ]
+            },
+            {
+                id: 'contrast',
+                question: '肌・髪・瞳のコントラストは',
+                options: [
+                    { value: 'low', label: 'コントラストが弱い（全体的に同じトーン）', weight: { summer: 1, autumn: 1 } },
+                    { value: 'medium', label: 'コントラストは普通', weight: { spring: 1 } },
+                    { value: 'high', label: 'コントラストが強い（はっきりしている）', weight: { winter: 2 } }
+                ]
+            },
+            {
+                id: 'clarity',
+                question: 'あなたの印象の明度は',
+                options: [
+                    { value: 'bright', label: '明るくクリア', weight: { spring: 2 } },
+                    { value: 'light', label: '明るく柔らかい', weight: { spring: 1, summer: 1 } },
+                    { value: 'soft', label: '柔らかくソフト', weight: { summer: 2 } },
+                    { value: 'muted', label: 'くすみがある', weight: { autumn: 2 } },
+                    { value: 'deep', label: '深く濃い', weight: { autumn: 1, winter: 2 } }
+                ]
+            }
+        ];
+
+        // 診断結果を計算
+        function calculateResult() {
+            const scores = { spring: 0, summer: 0, autumn: 0, winter: 0 };
+            const subtypeScores = {
+                bright: 0,
+                light: 0,
+                soft: 0,
+                warm: 0,
+                cool: 0,
+                clear: 0,
+                deep: 0,
+                mute: 0
+            };
+            
+            Object.keys(state.answers).forEach(questionId => {
+                const question = questions.find(q => q.id === questionId);
+                const answer = state.answers[questionId];
+                const option = question.options.find(o => o.value === answer);
+                
+                if (option && option.weight) {
+                    Object.keys(option.weight).forEach(key => {
+                        if (scores.hasOwnProperty(key)) {
+                            scores[key] += option.weight[key];
+                        }
+                        if (subtypeScores.hasOwnProperty(key)) {
+                            subtypeScores[key] += option.weight[key];
+                        }
+                    });
+                }
+            });
+
+            // 最も高いスコアのシーズンを決定
+            const maxScore = Math.max(...Object.values(scores));
+            const topSeasons = Object.keys(scores).filter(s => scores[s] === maxScore);
+            const mainSeason = topSeasons[0];
+            
+            // サブタイプを決定
+            const seasonSubtypes = {
+                spring: ['bright', 'light', 'warm', 'clear'],
+                summer: ['light', 'soft', 'cool', 'mute'],
+                autumn: ['soft', 'warm', 'deep', 'mute'],
+                winter: ['clear', 'cool', 'deep', 'bright']
+            };
+            
+            const relevantSubtypes = seasonSubtypes[mainSeason];
+            let maxSubtypeScore = -1;
+            let subtype = relevantSubtypes[0];
+            
+            relevantSubtypes.forEach(st => {
+                if (subtypeScores[st] > maxSubtypeScore) {
+                    maxSubtypeScore = subtypeScores[st];
+                    subtype = st;
+                }
+            });
+            
+            const typeKey = `${mainSeason}-${subtype}`;
+            return colorTypes[typeKey] || colorTypes[`${mainSeason}-light`];
+        }
+
+        // 画面をレンダリング
+        function render() {
+            const app = document.getElementById('app');
+            
+            if (state.currentPage === 'home') {
+                app.innerHTML = renderHome();
+            } else if (state.currentPage === 'question') {
+                app.innerHTML = renderQuestion();
+            } else if (state.currentPage === 'result') {
+                app.innerHTML = renderResult();
+            }
+
+            attachEventListeners();
+        }
+
+        // ホーム画面
+        function renderHome() {
+            return `
+                <div class="container">
+                    <div class="header">
+                        <h1>✨ パーソナルカラー診断</h1>
+                        <p>あなたに似合う色を見つけましょう</p>
+                    </div>
+                    
+                    <div class="grid">
+                        <div class="card feature-card" onclick="startQuestionDiagnosis()">
+                            <div class="icon">🎨</div>
+                            <h2>質問診断</h2>
+                            <p>10の質問に答えて詳しく診断します</p>
+                            <button class="button button-primary">診断を始める →</button>
+                        </div>
+                        
+                        <div class="card feature-card" onclick="document.getElementById('fileInput').click()">
+                            <div class="icon">📷</div>
+                            <h2>画像診断</h2>
+                            <p>顔写真をアップロードして診断</p>
+                            <button class="button button-primary">写真を選択 →</button>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
+                </div>
+            `;
+        }
+
+        // 質問画面
+        function renderQuestion() {
+            const currentQuestion = questions[state.questionStep];
+            const progress = ((state.questionStep + 1) / questions.length) * 100;
+            
+            return `
+                <div class="container">
+                    <div class="card">
+                        <button class="close-btn" onclick="resetApp()">✕</button>
+                        <p style="color: #666; margin-bottom: 10px;">質問 ${state.questionStep + 1} / ${questions.length}</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        
+                        <h2 style="margin-bottom: 30px;">${currentQuestion.question}</h2>
+                        
+                        ${currentQuestion.options.map(option => `
+                            <button class="option-button" onclick="handleAnswer('${currentQuestion.id}', '${option.value}')">
+                                ${option.label}
+                            </button>
+                        `).join('')}
+                        
+                        ${state.questionStep > 0 ? `
+                            <button class="back-btn" onclick="goBackQuestion()">
+                                ← 前の質問に戻る
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 結果画面
+        function renderResult() {
+            if (!state.result) return '';
+            
+            return `
+                <div class="container">
+                    <div class="card">
+                        <button class="close-btn" onclick="resetApp()">✕</button>
+                        
+                        <div class="result-badge">
+                            <h2>💖 ${state.result.name}</h2>
+                            <p>${state.result.description}</p>
+                        </div>
+                        
+                        ${state.uploadedImage ? `
+                            <img src="${state.uploadedImage}" alt="診断画像" class="uploaded-image">
+                        ` : ''}
+                        
+                        <div class="section">
+                            <h3>あなたの特徴</h3>
+                            <ul>
+                                ${state.result.characteristics.map(char => `<li>${char}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>似合う色</h3>
+                            <div class="color-grid">
+                                ${state.result.bestColors.map(color => `
+                                    <div>
+                                        <div class="color-box" style="background-color: ${color}"></div>
+                                        <div class="color-label">${color}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>避けたい色</h3>
+                            <div class="color-grid">
+                                ${state.result.avoidColors.map(color => `
+                                    <div>
+                                        <div class="color-box" style="background-color: ${color}; opacity: 0.5"></div>
+                                        <div class="color-label">${color}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <h4>💄 メイクアドバイス</h4>
+                                <p><strong>リップ：</strong>${state.result.makeup.lipstick}</p>
+                                <p><strong>チーク：</strong>${state.result.makeup.cheek}</p>
+                                <p><strong>アイシャドウ：</strong>${state.result.makeup.eyeshadow}</p>
+                            </div>
+                            
+                            <div class="info-card">
+                                <h4>👔 ファッションアドバイス</h4>
+                                <p><strong>トップス：</strong>${state.result.fashion.tops}</p>
+                                <p><strong>ボトムス：</strong>${state.result.fashion.bottoms}</p>
+                                <p><strong>アクセサリー：</strong>${state.result.fashion.accessories}</p>
+                            </div>
+                        </div>
+                        
+                        <button class="button button-primary" onclick="resetApp()" style="margin-top: 30px;">
+                            もう一度診断する
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // イベントリスナーの設定
+        function attachEventListeners() {
+            // 必要に応じて追加のイベントリスナーを設定
+        }
+
+        // 質問診断を開始
+        function startQuestionDiagnosis() {
+            state.diagnosisMode = 'question';
+            state.currentPage = 'question';
+            state.questionStep = 0;
+            state.answers = {};
+            render();
+        }
+
+        // 回答を処理
+        function handleAnswer(questionId, value) {
+            state.answers[questionId] = value;
+            
+            if (state.questionStep < questions.length - 1) {
+                state.questionStep++;
+                render();
+            } else {
+                state.result = calculateResult();
+                state.currentPage = 'result';
+                render();
+            }
+        }
+
+        // 前の質問に戻る
+        function goBackQuestion() {
+            if (state.questionStep > 0) {
+                state.questionStep--;
+                render();
+            }
+        }
+
+        // 画像アップロード処理
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    state.uploadedImage = e.target.result;
+                    // 簡易的にランダムな結果を表示（実際の画像分析は複雑なため）
+                    const types = Object.keys(colorTypes);
+                    const randomType = types[Math.floor(Math.random() * types.length)];
+                    state.result = colorTypes[randomType];
+                    state.currentPage = 'result';
+                    render();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // アプリをリセット
+        function resetApp() {
+            state.currentPage = 'home';
+            state.diagnosisMode = null;
+            state.questionStep = 0;
+            state.answers = {};
+            state.result = null;
+            state.uploadedImage = null;
+            render();
+        }
+
+        // 初期化
+        render();
+    </script>
+</body>
+</html>
